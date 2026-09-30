@@ -1,6 +1,6 @@
 /* Nine Men's Morris Animation by Austin Welsh-Graham */
 
-class MyEffect {
+return class MyEffect {
   constructor(display) {
     this.display = display;
     this.width = display.width;
@@ -380,6 +380,13 @@ class MyEffect {
   }
 
   movePiece() {
+    if (this.moveCount >= 100) {
+      this.winner = 0;
+      this.phase = 'celebrate';
+      this.phaseFrame = 0;
+      return;
+    }
+
     const options = this.movablePieces(this.turn);
 
     if (options.length === 0) {
@@ -432,6 +439,7 @@ class MyEffect {
       if (victim !== 0) {
         this.board[this.captureTarget] = 0;
         this.players[victim].pieces--;
+        this.moveCount = 0;
       }
     }
 
