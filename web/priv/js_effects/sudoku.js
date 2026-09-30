@@ -1,6 +1,6 @@
 /* Sudoku Animation by Austin Welsh-Graham */
 
-class MyEffect {
+return class MyEffect {
   constructor(display) {
     this.display = display;
     this.width = display.width;
@@ -240,18 +240,33 @@ class MyEffect {
   }
 
   drawGridLines(x0, y0, cellW, cellH, count, scale) {
+    const getPos = (i, cellDim, maxDim) => (i === count) ? maxDim - 1 : Math.floor(i * cellDim);
+
     for (let i = 0; i <= count; i++) {
-      const x = Math.floor(x0 + i * cellW);
-      const y = Math.floor(y0 + i * cellH);
-
-      const colour = i % 3 === 0 ? this.colours.box : this.colours.grid;
-
-      for (let py = y0; py < y0 + count * cellH; py++) {
-        this.pixel(x, py, colour);
+      if (i % 3 === 0) {
+        continue;
       }
 
-      for (let px = x0; px < x0 + count * cellW; px++) {
-        this.pixel(px, y, colour);
+      const x = getPos(i, cellW, this.width);
+      const y = getPos(i, cellH, this.height);
+
+      for (let py = 0; py < this.height; py++) {
+        this.pixel(x, py, this.colours.grid);
+      }
+      for (let px = 0; px < this.width; px++) {
+        this.pixel(px, y, this.colours.grid);
+      }
+    }
+
+    for (let i = 0; i <= count; i += 3) {
+      const x = getPos(i, cellW, this.width);
+      const y = getPos(i, cellH, this.height);
+
+      for (let py = 0; py < this.height; py++) {
+        this.pixel(x, py, this.colours.box);
+      }
+      for (let px = 0; px < this.width; px++) {
+        this.pixel(px, y, this.colours.box);
       }
     }
   }
@@ -262,9 +277,12 @@ class MyEffect {
 
     for (let row = 0; row < 9; row++) {
       for (let column = 0; column < 9; column++) {
-        this.drawCell(row, column, Math.floor(column * cw),
-            Math.floor(row * ch), Math.floor((column + 1) * cw),
-            Math.floor((row + 1) * ch));
+        const x0 = Math.floor(column * cw);
+        const y0 = Math.floor(row * ch);
+        const x1 = (column === 8) ? this.width : Math.floor((column + 1) * cw);
+        const y1 = (row === 8) ? this.height : Math.floor((row + 1) * ch);
+
+        this.drawCell(row, column, x0, y0, x1, y1);
       }
     }
 
@@ -391,7 +409,7 @@ class MyEffect {
 
           this.currentCell = cell;
 
-          // Briefly show notes before entering some answers.
+          /* Briefly show notes before entering some answers. */
           if (this.actionIndex % 6 === 0 && this.phaseFrame < 3) {
             this.notes[cell.row][cell.column] = this.candidates(cell.row,
                 cell.column).slice(0, 3);
